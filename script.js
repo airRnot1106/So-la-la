@@ -321,7 +321,6 @@ function keyPressed() {
             notes.judge();
         }
     }
-    
     pressFlg = true;
 }
 
