@@ -1,8 +1,11 @@
+let score;
+let scoreArea;
 const oneBarLength = 600;
 let notesLine;
 let judgmentFrame;
 let notesData = [];
 let barData = [];
+let pressFlg = false;
 const musicData = [ [1, 0], [1, 0],
                     [2, 0], [2, 0], [2, 0], [2, 0],
                     [4, 0], [4, 0], [4, 0], [4, 0], [4, 0], [4, 0], [4, 0], [4, 0],
@@ -100,6 +103,39 @@ const lengthRatio = {
     }
 }
 
+class Score {
+    constructor() {
+        this.score = 0;
+    }
+    add(quality) {
+        if(quality < 2) {
+            this.score += 1000;
+            console.log(1000);
+        } else if(quality < 6) {
+            this.score += 500;
+            console.log(500);
+        } else {
+            this.scoere += 200;
+            console.log(200);
+        }
+    }
+    fail() {
+        console.log('miss');
+    }
+}
+
+class SocreArea {
+    constructor(_vec) {
+        this.vec = _vec;
+    }
+    create() {
+        stroke('#ffffff');
+        strokeWeight(8);
+        fill(0);
+        rect(this.vec.x, this.vec.y, width / 6, this.vec.y);
+    }
+}
+
 class NotesLine {
     constructor(_height, _color) {
         this.height = _height;
@@ -153,12 +189,14 @@ class Notes {
     constructor(_vec, _value) {
         this.vec = _vec;
         this.value = _value;
+        this.flg = false;
     }
     scroll() {
         this.vec = this.vec.add(new Vec2(-3, 0));
     }
     create() {}
     judge() {}
+    die() {}
 }
 
 class TapNotes extends Notes {
@@ -170,6 +208,25 @@ class TapNotes extends Notes {
         circle(this.vec.x, this.vec.y, 40);
         fill('#f03c23');
         circle(this.vec.x, this.vec.y, 30);
+    }
+    judge() {
+        if(!this.flg) {
+            const judgeVec = this.vec.sub(judgmentFrame.vec);
+            const quality = judgeVec.mag();
+            if(quality < 10) {
+                score.add(quality);
+                this.flg = true;
+            } else if(quality < 20) {
+                score.fail();
+                this.flg = true;
+            }
+        }
+    }
+    die() {
+        if(!this.flg) {
+            score.fail();
+            this.flg = true;
+        }
     }
 }
 
@@ -198,7 +255,6 @@ class Bar extends Notes {
         stroke('#f9f9f9');
         line(this.vec.x, notesLine.height, this.vec.x, 2 * notesLine.height);
     }
-    
 }
 
 function loadMusicData(musicData, judgmentFrameVec) {
@@ -213,10 +269,8 @@ function loadMusicData(musicData, judgmentFrameVec) {
         lastVec = lastVec.add(new Vec2(oneBarLength * (lengthRatio[value[0].toString(10)] / lengthRatio['1']), 0));
     }
     const barNum = (lastVec.x - defaultVec.x) / oneBarLength;
-    console.log(barNum);
     for(let i = 0; i < barNum; i++) {
         barData.push(new Bar(new Vec2(defaultVec.x + oneBarLength * i, judgmentFrameVec.y)));
-        console.log(new Bar(new Vec2(defaultVec.x + oneBarLength * i, judgmentFrameVec.y)));
     }
 }
 
@@ -230,7 +284,9 @@ function createScoreArea() {
 function setup() {
     createCanvas(800, 450);
     background(0);
+    score = new Score();
     notesLine = new NotesLine(60, '#ffffff');
+    scoreArea = new SocreArea(new Vec2(0, notesLine.height));
     judgmentFrame = new JudgmentFrame(notesLine.judgmentFramePosition);
     loadMusicData(musicData, notesLine.judgmentFramePosition);
 }
@@ -250,16 +306,26 @@ function draw() {
     for(let notes of notesData) {
         notes.create();
         notes.scroll();
+        const deadlineVec = judgmentFrame.vec.add(new Vec2(-20, 0));
+        if(deadlineVec.sub(notes.vec).x > 0) {
+            notes.die();
+        }
     }
-    createScoreArea();
-    
-
-
-
+    scoreArea.create();
 }
 
 function keyPressed() {
-    if(keyCode === 32) {
+    if(keyCode === 32 && !pressFlg) {
         judgmentFrame.animeFlg = 1;
+        for(let notes of notesData) {
+            notes.judge();
+        }
+    } else {
+        console.log(notesData);
     }
+    pressFlg = true;
+}
+
+function keyReleased() {
+    pressFlg = false;
 }
