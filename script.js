@@ -320,8 +320,6 @@ function keyPressed() {
         for(let notes of notesData) {
             notes.judge();
         }
-    } else {
-        console.log(notesData);
     }
     pressFlg = true;
 }
