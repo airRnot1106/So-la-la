@@ -274,13 +274,6 @@ function loadMusicData(musicData, judgmentFrameVec) {
     }
 }
 
-function createScoreArea() {
-    stroke('#ffffff');
-    strokeWeight(8);
-    fill(0);
-    rect(0, notesLine.height, width / 6, notesLine.height);
-}
-
 function setup() {
     createCanvas(800, 450);
     background(0);
