@@ -288,6 +288,7 @@ function setup() {
     notesLine = new NotesLine(60, '#ffffff');
     scoreArea = new SocreArea(new Vec2(0, notesLine.height));
     judgmentFrame = new JudgmentFrame(notesLine.judgmentFramePosition);
+    textFont("'Press Start 2P', cursive");
     loadMusicData(musicData, notesLine.judgmentFramePosition);
 }
 
