@@ -1,5 +1,4 @@
 let score;
-let scoreArea;
 const oneBarLength = 600;
 let notesLine;
 let judgmentFrame;
@@ -12,7 +11,7 @@ let pressFlg = false;
                     [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0],
                     [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0],
                     [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0],
-                    [1, 1]
+                    [1, 1, 0]
                     ];*/
 const musicData = [[1, 1, 0], [2, 1, 1], [2, 1, 0]];
 
@@ -89,8 +88,45 @@ const lengthRatio = {
 }
 
 class Score {
-    constructor() {
+    constructor(_vec) {
+        this.vec = _vec;
         this.score = 0;
+        this.maxCombo = 0;
+        this.combo = 0;
+        this.mashingTime = 0;
+        this.mashingFlg = 0;
+    }
+    create() {
+        stroke('#ffffff');
+        strokeWeight(8);
+        fill(0);
+        rect(this.vec.x, this.vec.y, width / 6, this.vec.y);
+    }
+    showScore() {
+        textAlign(CENTER);
+        textSize(10);
+        noStroke();
+        fill(255);
+        text(`COMBO: ${this.combo}`, this.vec.x + width / 12, 1.5 * this.vec.y);
+        text(`SCORE: ${this.score}`, this.vec.x + width / 12, 0.7 * this.vec.y);
+
+    }
+    showMashing() {
+        if(this.mashingFlg <= 0) {
+            return;
+        }
+        textAlign(CENTER);
+        textSize(10);
+        noStroke();
+        fill(255);
+        text(`Drum Roll: ${this.mashingTime}`, this.vec.x + width / 4, 0.7 * this.vec.y);
+        this.mashingFlg--;
+
+    }
+    resetMashing() {
+        if(this.mashingFlg <= 0) {
+            this.mashingTime = 0;
+        }
     }
     add(quality) {
         if(quality < 2) {
@@ -100,24 +136,22 @@ class Score {
             this.score += 500;
             console.log(500);
         } else {
-            this.scoere += 200;
+            this.score += 200;
             console.log(200);
         }
+        this.combo++;
+        if(this.maxCombo < this.combo) {
+            this.maxCombo = this.combo;
+        }
+    }
+    mash() {
+        this.score += 500;
+        this.mashingTime++;
+        this.mashingFlg = 50;
     }
     fail() {
         console.log('miss');
-    }
-}
-
-class SocreArea {
-    constructor(_vec) {
-        this.vec = _vec;
-    }
-    create() {
-        stroke('#ffffff');
-        strokeWeight(8);
-        fill(0);
-        rect(this.vec.x, this.vec.y, width / 6, this.vec.y);
+        this.combo = 0;
     }
 }
 
@@ -221,7 +255,6 @@ class TapNotes extends Notes {
 class LongNotes extends Notes {
     constructor(_vec, _value) {
         super(_vec, _value);
-        this.mashingTime = 0;
     }
     create() {
         noStroke();
@@ -241,9 +274,9 @@ class LongNotes extends Notes {
         const judgeVec = judgmentFrame.vec.sub(this.vec);
         this.quality = judgeVec.mag();
         if(judgeVec.x > 0 && judgeVec.x <= new Vec2(oneBarLength * (lengthRatio[this.value.toString(10)] / lengthRatio['1']), 0).x) {
-            this.mashingTime++;
-            console.log(this.mashingTime);
-            
+            score.mash();
+        } else if(judgeVec.x > 0) {
+            score.resetMashing();
         }
     }
 }
@@ -280,9 +313,8 @@ function loadMusicData(musicData, judgmentFrameVec) {
 function setup() {
     createCanvas(800, 450);
     background(0);
-    score = new Score();
     notesLine = new NotesLine(60, '#ffffff');
-    scoreArea = new SocreArea(new Vec2(0, notesLine.height));
+    score = new Score(new Vec2(0, notesLine.height));
     judgmentFrame = new JudgmentFrame(notesLine.judgmentFramePosition);
     textFont("'Press Start 2P', cursive");
     loadMusicData(musicData, notesLine.judgmentFramePosition);
@@ -308,7 +340,9 @@ function draw() {
             notes.die();
         }
     }
-    scoreArea.create();
+    score.create();
+    score.showScore();
+    score.showMashing();
 }
 
 function keyPressed() {
