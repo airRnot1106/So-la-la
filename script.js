@@ -6,14 +6,15 @@ let judgmentFrame;
 let notesData = [];
 let barData = [];
 let pressFlg = false;
-const musicData = [ [1, 0], [1, 0],
-                    [2, 0], [2, 0], [2, 0], [2, 0],
-                    [4, 0], [4, 0], [4, 0], [4, 0], [4, 0], [4, 0], [4, 0], [4, 0],
-                    [8, 0], [8, 0], [8, 0], [8, 0], [8, 0], [8, 0], [8, 0], [8, 0], [8, 0], [8, 0], [8, 0], [8, 0], [8, 0], [8, 0], [8, 0], [8, 0],
-                    [83, 0], [83, 0], [83, 0], [83, 0], [83, 0], [83, 0], [83, 0], [83, 0], [83, 0], [83, 0], [83, 0], [83, 0], [83, 0], [83, 0], [83, 0], [83, 0], [83, 0], [83, 0], [83, 0], [83, 0], [83, 0], [83, 0], [83, 0], [83, 0],
-                    [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0], [16, 0],
+/*const musicData = [ [1, 0, 0], [1, 0, 0],
+                    [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0],
+                    [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0],
+                    [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0],
+                    [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0],
+                    [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0],
                     [1, 1]
-                    ];
+                    ];*/
+const musicData = [[1, 1, 0], [2, 1, 1], [2, 1, 0]];
 
 /*
 1: 全音符
@@ -24,32 +25,16 @@ const musicData = [ [1, 0], [1, 0],
 16: 十六分音符
 163: 十六分三連符
 32: 三十二分音符
-10: 全休符
-20: 二分休符
-40: 四分休符
-80: 八分休符
-830: 八分三連休符
-160: 十六分休符
-1630: 十六分三連休符
-320: 三十二分休符
 */
 const lengthRatio = {
     '1': 300,
-    '10': 300,
     '2': 150,
-    '20': 150,
     '4': 75,
-    '40': 75,
     '8': 37.5,
-    '80': 37.5,
     '83': 25,
-    '830': 25,
     '16': 18.75,
-    '160': 18.75,
     '163': 12.5,
-    '1630': 12.5,
     '32': 9.375,
-    '320': 9.375
 };
 
 /**
@@ -190,6 +175,7 @@ class Notes {
         this.vec = _vec;
         this.value = _value;
         this.flg = false;
+        this.quality;
     }
     scroll() {
         this.vec = this.vec.add(new Vec2(-3, 0));
@@ -210,29 +196,32 @@ class TapNotes extends Notes {
         circle(this.vec.x, this.vec.y, 30);
     }
     judge() {
-        if(!this.flg) {
-            const judgeVec = this.vec.sub(judgmentFrame.vec);
-            const quality = judgeVec.mag();
-            if(quality < 10) {
-                score.add(quality);
-                this.flg = true;
-            } else if(quality < 20) {
-                score.fail();
-                this.flg = true;
-            }
+        if(this.flg) {
+            return;
         }
-    }
-    die() {
-        if(!this.flg) {
+        const judgeVec = judgmentFrame.vec.sub(this.vec);
+        this.quality = judgeVec.mag();
+        if(this.quality < 10) {
+            score.add(this.quality);
+            this.flg = true;
+        } else if(this.quality < 20) {
             score.fail();
             this.flg = true;
         }
+    }
+    die() {
+        if(this.flg) {
+            return;
+        }
+        score.fail();
+        this.flg = true;
     }
 }
 
 class LongNotes extends Notes {
     constructor(_vec, _value) {
         super(_vec, _value);
+        this.mashingTime = 0;
     }
     create() {
         noStroke();
@@ -244,6 +233,18 @@ class LongNotes extends Notes {
         circle(this.vec.x, this.vec.y, 40);
         fill('#f0b40a');
         circle(this.vec.x, this.vec.y, 30);
+    }
+    judge() {
+        if(this.flg) {
+            return;
+        }
+        const judgeVec = judgmentFrame.vec.sub(this.vec);
+        this.quality = judgeVec.mag();
+        if(judgeVec.x > 0 && judgeVec.x <= new Vec2(oneBarLength * (lengthRatio[this.value.toString(10)] / lengthRatio['1']), 0).x) {
+            this.mashingTime++;
+            console.log(this.mashingTime);
+            
+        }
     }
 }
 
@@ -261,10 +262,12 @@ function loadMusicData(musicData, judgmentFrameVec) {
     const defaultVec = new Vec2(width + 100, judgmentFrameVec.y);
     let lastVec = defaultVec;
     for(let value of musicData) {
-        if(value[1] === 0) {
-            notesData.push(new TapNotes(lastVec, value[0]));
-        } else {
-            notesData.push(new LongNotes(lastVec, value[0]));
+        if(value[2] === 0) {
+            if(value[1] === 0) {
+                notesData.push(new TapNotes(lastVec, value[0]));
+            } else {
+                notesData.push(new LongNotes(lastVec, value[0]));
+            }
         }
         lastVec = lastVec.add(new Vec2(oneBarLength * (lengthRatio[value[0].toString(10)] / lengthRatio['1']), 0));
     }
