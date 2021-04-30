@@ -13,7 +13,7 @@ const musicData = [ [1, 0, 0], [1, 0, 0],
                     [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0],
                     [1, 1, 0]
                     ];
-//const musicData = [[1, 1, 0], [2, 1, 1], [2, 1, 0]];
+//const musicData = [[1, 1, 0], [2, 0, 0], [2, 1, 0], [2, 1, 0], [8, 1, 0], [8, 1, 0]];
 
 /*
 1: 全音符
@@ -95,6 +95,8 @@ class Score {
         this.combo = 0;
         this.mashingTime = 0;
         this.mashingFlg = 0;
+        this.strQuality = '';
+        this.qualityFlg = 0;
     }
     create() {
         stroke('#ffffff');
@@ -111,33 +113,33 @@ class Score {
         text(`SCORE: ${this.score}`, this.vec.x + width / 12, 0.7 * this.vec.y);
 
     }
-    showMashing() {
-        if(this.mashingFlg <= 0) {
+    showQuality() {
+        if(this.qualityFlg <= 0) {
             return;
         }
         textAlign(CENTER);
         textSize(10);
         noStroke();
         fill(255);
-        text(`Drum Roll: ${this.mashingTime}`, this.vec.x + width / 4, 0.7 * this.vec.y);
-        this.mashingFlg--;
-
-    }
-    resetMashing() {
-        if(this.mashingFlg <= 0) {
-            this.mashingTime = 0;
-        }
+        text(this.strQuality, judgmentFrame.vec.x, 1.6 * judgmentFrame.vec.y);
+        this.qualityFlg--;
     }
     add(quality) {
         if(quality < 2) {
             this.score += 1000;
             console.log(1000);
+            this.strQuality = 'perfect';
+            this.qualityFlg = 30;
         } else if(quality < 6) {
             this.score += 500;
+            this.strQuality = 'great';
+            this.qualityFlg = 30;
             console.log(500);
         } else {
             this.score += 200;
             console.log(200);
+            this.strQuality = 'nice';
+            this.qualityFlg = 30;
         }
         this.combo++;
         if(this.maxCombo < this.combo) {
@@ -147,10 +149,14 @@ class Score {
     mash() {
         this.score += 500;
         this.mashingTime++;
+        this.strQuality = `Drum Roll: ${this.mashingTime}`;
+        this.qualityFlg = 50;
         this.mashingFlg = 50;
     }
     fail() {
         console.log('miss');
+        this.strQuality = 'miss';
+        this.qualityFlg = 30;
         this.combo = 0;
     }
 }
@@ -166,8 +172,6 @@ class NotesLine {
         strokeWeight(8);
         line(0, this.height, width, this.height);
         line(0, 2 * this.height, width, 2 * this.height);
-        //strokeWeight(6);
-        //line(width / 6, this.height, width / 6, 2 * this.height);
     }
 }
 
@@ -212,7 +216,7 @@ class Notes {
         this.quality;
     }
     scroll() {
-        this.vec = this.vec.add(new Vec2(-3, 0));
+        this.vec = this.vec.add(new Vec2(-5, 0));
     }
     create() {}
     judge() {}
@@ -262,7 +266,7 @@ class LongNotes extends Notes {
     create() {
         noStroke();
         fill('#f0b40a');
-        for(let i = this.vec.add(new Vec2(oneBarLength * (lengthRatio[this.value.toString(10)] / lengthRatio['1']), 0)).x; i > this.vec.x; i--) {
+        for(let i = this.vec.add(new Vec2(oneBarLength * (lengthRatio[this.value.toString(10)] / lengthRatio['1']), 0)).x - 30; i > this.vec.x; i--) {
             circle(i, this.vec.y, 40);
         }
         fill('#ffffff');
@@ -271,15 +275,14 @@ class LongNotes extends Notes {
         circle(this.vec.x, this.vec.y, 30);
     }
     judge() {
-        if(this.flg) {
-            return;
-        }
         const judgeVec = judgmentFrame.vec.sub(this.vec);
         this.quality = judgeVec.mag();
-        if(judgeVec.x > 0 && judgeVec.x <= new Vec2(oneBarLength * (lengthRatio[this.value.toString(10)] / lengthRatio['1']), 0).x) {
+        if(judgeVec.x > 0 && judgeVec.x <= new Vec2(oneBarLength * (lengthRatio[this.value.toString(10)] / lengthRatio['1']), 0).x - 30) {
+            if(!this.flg) {
+                score.mashingTime = 0;
+                this.flg = true;
+            }
             score.mash();
-        } else if(judgeVec.x > 0) {
-            score.resetMashing();
         }
     }
 }
@@ -345,7 +348,10 @@ function draw() {
     }
     score.create();
     score.showScore();
-    score.showMashing();
+    score.showQuality();
+    if(score.mashingTime <= 0) {
+        console.log('!!!');
+    }
 }
 
 function keyPressed() {
