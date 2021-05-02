@@ -5,6 +5,7 @@ let judgmentFrame;
 let notesData = [];
 let barData = [];
 let pressFlg = false;
+let sound;
 const musicData = [ [1, 0, 0], [1, 0, 0],
                     [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0],
                     [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0],
@@ -93,6 +94,9 @@ class Score {
         this.score = 0;
         this.maxCombo = 0;
         this.combo = 0;
+        this.perfectTime = 0;
+        this.greatTime = 0;
+        this.niceTime = 0;
         this.mashingTime = 0;
         this.mashingFlg = 0;
         this.strQuality = '';
@@ -129,16 +133,19 @@ class Score {
             this.score += 1000;
             console.log(1000);
             this.strQuality = 'perfect';
+            this.perfectTime++;
             this.qualityFlg = 30;
         } else if(quality < 6) {
             this.score += 500;
             this.strQuality = 'great';
+            this.greatTime++;
             this.qualityFlg = 30;
             console.log(500);
         } else {
             this.score += 200;
             console.log(200);
             this.strQuality = 'nice';
+            this.niceTime++;
             this.qualityFlg = 30;
         }
         this.combo++;
@@ -316,6 +323,11 @@ function loadMusicData(musicData, judgmentFrameVec) {
     }
 }
 
+function preload() {
+    soundFormats('mp3', 'wav');
+    sound = loadSound('assets/MollDoll.mp3');
+}
+
 function setup() {
     createCanvas(800, 450);
     background(0);
@@ -324,6 +336,8 @@ function setup() {
     judgmentFrame = new JudgmentFrame(notesLine.judgmentFramePosition);
     textFont("'Press Start 2P', cursive");
     loadMusicData(musicData, notesLine.judgmentFramePosition);
+    console.log(getFrameRate());
+    noLoop();
 }
 
 function draw() {
@@ -349,9 +363,6 @@ function draw() {
     score.create();
     score.showScore();
     score.showQuality();
-    if(score.mashingTime <= 0) {
-        console.log('!!!');
-    }
 }
 
 function keyPressed() {
@@ -360,6 +371,9 @@ function keyPressed() {
         for(let notes of notesData) {
             notes.judge();
         }
+    } else if(keyCode === 83) {
+        loop();
+        sound.play();
     }
     pressFlg = true;
 }
