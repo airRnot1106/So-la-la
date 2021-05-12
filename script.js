@@ -223,7 +223,7 @@ class Notes {
         this.quality;
     }
     scroll() {
-        this.vec = this.vec.add(new Vec2(-5, 0));
+        this.vec = this.vec.add(new Vec2(-6, 0));
     }
     create() {}
     judge() {}
@@ -305,7 +305,7 @@ class Bar extends Notes {
 }
 
 function loadMusicData(musicData, judgmentFrameVec) {
-    const defaultVec = new Vec2(width + 100, judgmentFrameVec.y);
+    const defaultVec = new Vec2(width + (-360), judgmentFrameVec.y);
     let lastVec = defaultVec;
     for(let value of musicData) {
         if(value[2] === 0) {
@@ -336,7 +336,7 @@ function setup() {
     judgmentFrame = new JudgmentFrame(notesLine.judgmentFramePosition);
     textFont("'Press Start 2P', cursive");
     loadMusicData(musicData, notesLine.judgmentFramePosition);
-    console.log(getFrameRate());
+    frameRate(60);
     noLoop();
 }
 
