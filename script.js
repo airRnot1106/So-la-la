@@ -8,13 +8,13 @@ let barData = [];
 let pressFlg = false;
 let sound;
 let pico;
-const musicData = [ [1, 0, 0], [1, 0, 0],
+const musicData = [ [1, 1, 0], [1, 0, 1],
                     [1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 0, 0],
-                    [1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0],
-                    [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0],
-                    [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0],
-                    [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0],
-                    [1, 1, 0]
+                    [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0],
+                    [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [8, 0, 0], [16, 0, 1], [16, 0, 0], [8, 0, 1], [8, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [4, 1, 0],
+                    [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0],
+                    [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0],
+                    [4, 0, 1], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [4, 1, 0]
                     ];
 //const musicData = [[1, 1, 0], [2, 0, 0], [2, 1, 0], [2, 1, 0], [8, 1, 0], [8, 1, 0]];
 
@@ -131,13 +131,13 @@ class Score {
         this.qualityFlg--;
     }
     add(quality) {
-        if(quality < 2) {
+        if(quality < 5) {
             this.score += 1000;
             console.log(1000);
             this.strQuality = 'perfect';
             this.perfectTime++;
             this.qualityFlg = 30;
-        } else if(quality < 6) {
+        } else if(quality < 10) {
             this.score += 500;
             this.strQuality = 'great';
             this.greatTime++;
@@ -249,12 +249,12 @@ class TapNotes extends Notes {
         if(this.flg) {
             return;
         }
-        const judgeVec = judgmentFrame.vec.sub(this.vec);
+        const judgeVec = judgmentFrame.vec.add(new Vec2(-10, 0)).sub(this.vec);
         this.quality = judgeVec.mag();
-        if(this.quality < 10) {
+        if(this.quality < 30) {
             score.add(this.quality);
             this.flg = true;
-        } else if(this.quality < 20) {
+        } else if(this.quality < 40) {
             score.fail();
             this.flg = true;
         }
@@ -287,13 +287,21 @@ class LongNotes extends Notes {
         const judgeVec = judgmentFrame.vec.sub(this.vec);
         this.quality = judgeVec.mag();
         if(judgeVec.x > 0 && judgeVec.x <= new Vec2(oneBarLength * (lengthRatio[this.value.toString(10)] / lengthRatio['1']), 0).x - 30) {
-            if(!this.flg) {
-                score.mashingTime = 0;
-                this.flg = true;
-            }
             score.mash();
         }
+        if(!this.flg && judgeVec.x > new Vec2(oneBarLength * (lengthRatio[this.value.toString(10)] / lengthRatio['1']), 0).x - 30) {
+            score.mashingTime = 0;
+            this.flg = true;
+            console.log("a");
+        }
     }
+    /*die() {
+        if(this.flg) {
+            return;
+        }
+        //score.fail();
+        this.flg = true;
+    }*/
 }
 
 class Bar extends Notes {
@@ -307,7 +315,7 @@ class Bar extends Notes {
 }
 
 function loadMusicData(musicData, judgmentFrameVec) {
-    const defaultVec = new Vec2(judgmentFrameVec.x + 1250, judgmentFrameVec.y);
+    const defaultVec = new Vec2(judgmentFrameVec.x + 650, judgmentFrameVec.y);
     let lastVec = defaultVec;
     for(let value of musicData) {
         if(value[2] === 0) {
@@ -365,12 +373,12 @@ function draw() {
         notes.create();
         notes.scroll();
         const deadlineVec = judgmentFrame.vec.add(new Vec2(-20, 0));
-        if(judgmentFrame.vec.sub(notes.vec).x > 0 && !(notes.flg)) {
-            pico.play();
+        /*if(judgmentFrame.vec.sub(notes.vec).x > 0 && !(notes.flg)) {
+            //pico.play();
             notes.die();
-        }
+        }*/
         if(deadlineVec.sub(notes.vec).x > 0) {
-            //notes.die();
+            notes.die();
         }
     }
     score.create();
@@ -380,9 +388,13 @@ function draw() {
 
 function keyPressed() {
     if(keyCode === 32 && !pressFlg) {
+        //pico.play();
         judgmentFrame.animeFlg = 1;
         for(let notes of notesData) {
-            notes.judge();
+            if(!notes.flg) {
+                notes.judge();
+                break;
+            }
         }
     } else if(keyCode === 83) {
         loop();
