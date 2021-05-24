@@ -1,22 +1,28 @@
 let score;
-const oneBarLength = 600;
-const bpm = 182;
 let notesLine;
 let judgmentFrame;
-let notesData = [];
-let barData = [];
 let pressFlg = false;
 let sound;
 let pico;
-const musicData = [ [1, 1, 0], [1, 0, 1],
+//const musicData = [[1, 1, 0], [2, 0, 0], [2, 1, 0], [2, 1, 0], [8, 1, 0], [8, 1, 0]];
+
+const music01 = {
+    title: 'Typoghoti',
+    oneBarLength: 600,
+    bpm: 182,
+    musicData: [    [1, 1, 0], [1, 0, 1],
                     [1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 0, 0],
                     [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0],
                     [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [8, 0, 0], [16, 0, 1], [16, 0, 0], [8, 0, 1], [8, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [4, 1, 0],
                     [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0],
                     [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0],
                     [4, 0, 1], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [4, 1, 0]
-                    ];
-//const musicData = [[1, 1, 0], [2, 0, 0], [2, 1, 0], [2, 1, 0], [8, 1, 0], [8, 1, 0]];
+    ],
+    notesData: [],
+    barData: []
+};
+
+let playMusic = music01;
 
 /*
 1: 全音符
@@ -225,7 +231,7 @@ class Notes {
         this.quality;
     }
     scroll() {
-        this.vec = this.vec.add(new Vec2(getMoveFrame(bpm, oneBarLength) * -1, 0));
+        this.vec = this.vec.add(new Vec2(getMoveFrame(playMusic.bpm, playMusic.oneBarLength) * -1, 0));
     }
     create() {}
     judge() {}
@@ -249,7 +255,7 @@ class TapNotes extends Notes {
         if(this.flg) {
             return;
         }
-        const judgeVec = judgmentFrame.vec.add(new Vec2(-10, 0)).sub(this.vec);
+        const judgeVec = judgmentFrame.vec.add(new Vec2(-0, 0)).sub(this.vec);
         this.quality = judgeVec.mag();
         if(this.quality < 30) {
             score.add(this.quality);
@@ -275,7 +281,7 @@ class LongNotes extends Notes {
     create() {
         noStroke();
         fill('#f0b40a');
-        for(let i = this.vec.add(new Vec2(oneBarLength * (lengthRatio[this.value.toString(10)] / lengthRatio['1']), 0)).x - 30; i > this.vec.x; i--) {
+        for(let i = this.vec.add(new Vec2(playMusic.oneBarLength * (lengthRatio[this.value.toString(10)] / lengthRatio['1']), 0)).x - 30; i > this.vec.x; i--) {
             circle(i, this.vec.y, 40);
         }
         fill('#ffffff');
@@ -284,24 +290,26 @@ class LongNotes extends Notes {
         circle(this.vec.x, this.vec.y, 30);
     }
     judge() {
+        if(this.flg) {
+            return;
+        }
         const judgeVec = judgmentFrame.vec.sub(this.vec);
         this.quality = judgeVec.mag();
-        if(judgeVec.x > 0 && judgeVec.x <= new Vec2(oneBarLength * (lengthRatio[this.value.toString(10)] / lengthRatio['1']), 0).x - 30) {
+        if(judgeVec.x > 0 && judgeVec.x <= new Vec2(playMusic.oneBarLength * (lengthRatio[this.value.toString(10)] / lengthRatio['1']), 0).x - 30) {
             score.mash();
         }
-        if(!this.flg && judgeVec.x > new Vec2(oneBarLength * (lengthRatio[this.value.toString(10)] / lengthRatio['1']), 0).x - 30) {
+    }
+    die() {
+        if(this.flg) {
+            return;
+        }
+        const judgeVec = judgmentFrame.vec.sub(this.vec);
+        if(judgeVec.x > new Vec2(playMusic.oneBarLength * (lengthRatio[this.value.toString(10)] / lengthRatio['1']), 0).x - 30) {
             score.mashingTime = 0;
             this.flg = true;
             console.log("a");
         }
     }
-    /*die() {
-        if(this.flg) {
-            return;
-        }
-        //score.fail();
-        this.flg = true;
-    }*/
 }
 
 class Bar extends Notes {
@@ -315,21 +323,21 @@ class Bar extends Notes {
 }
 
 function loadMusicData(musicData, judgmentFrameVec) {
-    const defaultVec = new Vec2(judgmentFrameVec.x + 650, judgmentFrameVec.y);
+    const defaultVec = new Vec2(judgmentFrameVec.x + 600, judgmentFrameVec.y);
     let lastVec = defaultVec;
     for(let value of musicData) {
         if(value[2] === 0) {
             if(value[1] === 0) {
-                notesData.push(new TapNotes(lastVec, value[0]));
+                playMusic.notesData.push(new TapNotes(lastVec, value[0]));
             } else {
-                notesData.push(new LongNotes(lastVec, value[0]));
+                playMusic.notesData.push(new LongNotes(lastVec, value[0]));
             }
         }
-        lastVec = lastVec.add(new Vec2(oneBarLength * (lengthRatio[value[0].toString(10)] / lengthRatio['1']), 0));
+        lastVec = lastVec.add(new Vec2(playMusic.oneBarLength * (lengthRatio[value[0].toString(10)] / lengthRatio['1']), 0));
     }
-    const barNum = (lastVec.x - defaultVec.x) / oneBarLength;
+    const barNum = (lastVec.x - defaultVec.x) / playMusic.oneBarLength;
     for(let i = 0; i < barNum; i++) {
-        barData.push(new Bar(new Vec2(defaultVec.x + oneBarLength * i, judgmentFrameVec.y)));
+        playMusic.barData.push(new Bar(new Vec2(defaultVec.x + playMusic.oneBarLength * i, judgmentFrameVec.y)));
     }
 }
 
@@ -337,6 +345,16 @@ function getMoveFrame(tempo, barLength) {
     let oneMeasureFrame = (60 / tempo) * 4 * 60;
     let movingPixcel = barLength / oneMeasureFrame;
     return movingPixcel;
+}
+
+function scanJudge() {
+    judgmentFrame.animeFlg = 1;
+    for(let notes of playMusic.notesData) {
+        if(!notes.flg) {
+            notes.judge();
+            break;
+        }
+    }
 }
 
 function preload() {
@@ -352,7 +370,7 @@ function setup() {
     score = new Score(new Vec2(0, notesLine.height));
     judgmentFrame = new JudgmentFrame(notesLine.judgmentFramePosition);
     textFont("'Press Start 2P', cursive");
-    loadMusicData(musicData, notesLine.judgmentFramePosition);
+    loadMusicData(playMusic.musicData, notesLine.judgmentFramePosition);
     frameRate(60);
     noLoop();
 }
@@ -365,11 +383,11 @@ function draw() {
     } else {
         judgmentFrame.create();
     }
-    for(let bar of barData) {
+    for(let bar of playMusic.barData) {
         bar.create();
         bar.scroll();
     }
-    for(let notes of notesData) {
+    for(let notes of playMusic.notesData) {
         notes.create();
         notes.scroll();
         const deadlineVec = judgmentFrame.vec.add(new Vec2(-20, 0));
@@ -387,16 +405,13 @@ function draw() {
 }
 
 function keyPressed() {
-    if(keyCode === 32 && !pressFlg) {
-        //pico.play();
-        judgmentFrame.animeFlg = 1;
-        for(let notes of notesData) {
-            if(!notes.flg) {
-                notes.judge();
-                break;
-            }
-        }
-    } else if(keyCode === 83) {
+    if(keyCode === 32) {
+        scanJudge();
+    } else if(keyCode === 70) {
+        scanJudge();
+    } else if(keyCode === 74) {
+        scanJudge();
+    } else if(keyCode === 83 && !isPlaying()) {
         loop();
         sound.play();
     }
