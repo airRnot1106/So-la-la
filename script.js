@@ -323,7 +323,7 @@ class Bar extends Notes {
 }
 
 function loadMusicData(musicData, judgmentFrameVec) {
-    const defaultVec = new Vec2(judgmentFrameVec.x + 600, judgmentFrameVec.y);
+    const defaultVec = new Vec2(judgmentFrameVec.x + playMusic.oneBarLength, judgmentFrameVec.y);
     let lastVec = defaultVec;
     for(let value of musicData) {
         if(value[2] === 0) {
@@ -411,9 +411,10 @@ function keyPressed() {
         scanJudge();
     } else if(keyCode === 74) {
         scanJudge();
-    } else if(keyCode === 83 && !isPlaying()) {
+    } else if(keyCode === 83 && !sound.isPlaying()) {
         loop();
         sound.play();
+        console.log("Music start");
     }
     pressFlg = true;
 }
