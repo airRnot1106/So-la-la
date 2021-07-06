@@ -536,6 +536,7 @@ function showTitleKeyPressed() {
 }
 
 function selectMusicKeyPressed() {
+    pico.play();
     playFlg = 2;
     noLoop();
     setTimeout(() => {
