@@ -327,6 +327,15 @@ class Score {
         text(this.strQuality, judgmentFrame.vec.x, 1.6 * judgmentFrame.vec.y);
         this.qualityFlg--;
     }
+    showTitle() {
+        textFont("'Press Start 2P', cursive");
+        let titleStr = playMusic.title + '-' + playMusic.level[0];
+        textFont("'Press Start 2P', cursive");
+        stroke(1);
+        textSize(16);
+        textAlign(RIGHT);
+        text(titleStr, 790, 24);
+    }
     add(quality) {
         if(quality < 5) {
             this.score += 1000;
@@ -567,7 +576,6 @@ function setup() {
     notesLine = new NotesLine(60, '#ffffff');
     score = new Score(new Vec2(0, notesLine.height));
     judgmentFrame = new JudgmentFrame(notesLine.judgmentFramePosition);
-    textFont("'Press Start 2P', cursive");
     frameRate(60);
     
 }
@@ -606,7 +614,6 @@ function selectMusic() {
             selectFlg = true;
         }, 50);
     }
-    console.log(selectMenu.selectingMusicNumber);
 }
 
 function play() {
@@ -636,6 +643,7 @@ function play() {
     score.create();
     score.showScore();
     score.showQuality();
+    score.showTitle();
 }
 
 function keyPressed() {
@@ -674,7 +682,13 @@ function selectMusicKeyPressed() {
     } else if(keyCode === 32) {
         playMusic = selectMenu.selectingMusic.music;
         loadMusicData(playMusic.musicData, notesLine.judgmentFramePosition);
+        console.log('Loading of the music is complete.');
+        console.log('---Play-Music-Data-----------------------');
+        console.log(`Title: ${playMusic.title}`);
+        console.log(`Level: ${playMusic.level[0]}`);
+        console.log('-----------------------------------------');
         playFlg = 2;
+        
         noLoop();
         setTimeout(() => {
             loop();
@@ -691,10 +705,6 @@ function playKeyPressed() {
         scanJudge();
     } else if(keyCode === 74) {
         scanJudge();
-    } else if(keyCode === 83 && !sound.isPlaying()) {
-        //loop();
-        //sound.play();
-        //console.log("Music start");
     }
     pressFlg = true;
 }
