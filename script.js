@@ -2,15 +2,91 @@ let score;
 let notesLine;
 let judgmentFrame;
 let pressFlg = false;
-let sound;
+let sound = [];
 let pico;
 let title;
+let select;
 let playFlg = 0;
 let selectFlg = false;
-//const musicData = [[1, 1, 0], [2, 0, 0], [2, 1, 0], [2, 1, 0], [8, 1, 0], [8, 1, 0]];
+
 
 const music01 = {
+    title: 'Untitled',
+    level: ['easy', '☆☆☆☆★'],
+    oneBarLength: 400,
+    bpm: 203,
+    musicData: [
+
+            ],
+    notesData: [],
+    barData: []
+};
+const music02 = {
+    title: 'Untitled',
+    level: ['hard', '☆★★★★'],
+    oneBarLength: 400,
+    bpm: 203,
+    musicData: [
+
+            ],
+    notesData: [],
+    barData: []
+};
+const music03 = {
     title: 'Typoghoti',
+    level: ['easy', '☆☆★★★'],
+    oneBarLength: 400,
+    bpm: 185,
+    musicData: [    [1, 0, 1], [1, 0, 1], [1, 0, 1],
+                    [1, 0, 0], [1, 0, 1], [1, 0, 0], [1, 0, 1],
+                    [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0],
+                    [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0],
+                    [2, 0, 0], [4, 1, 0], [4, 0, 1],
+                    [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0],
+                    [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0],
+                    [4, 0, 1], [4, 0, 0], [4, 0, 0], [4, 0, 0], [1, 0, 0],
+                    [1, 0, 0], [1, 0, 0], [1, 0, 0], [2, 0, 0], [2, 0, 0],
+                    [1, 0, 0], [1, 0, 0], [1, 0, 0], [2, 0, 0], [4, 0, 0], [4, 0, 0],
+                    [1, 0, 0], [1, 0, 0], [1, 0, 0], [2, 0, 0], [2, 0, 0],
+                    [1, 0, 0], [1, 0, 0], [1, 0, 0], [2, 0, 0], [4, 0, 0], [4, 0, 0],
+                    [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [2, 0, 0],
+                    [1, 0, 1],
+                    [4, 0, 0], [8, 0, 1], [8, 0, 0], [4, 0, 1], [8, 0, 1], [8, 0, 0], [4, 0, 1], [4, 0, 0], [8, 0, 1], [8, 0, 0], [4, 0, 1],
+                    [4, 0, 0], [8, 0, 1], [8, 0, 0], [4, 0, 1], [8, 0, 1], [8, 0, 0], [4, 0, 1], [4, 0, 0], [8, 0, 1], [8, 0, 0], [4, 0, 1],
+                    [4, 0, 0], [8, 0, 1], [8, 0, 0], [4, 0, 1], [8, 0, 1], [8, 0, 0], [4, 0, 1], [4, 0, 0], [8, 0, 1], [8, 0, 0], [4, 0, 1],
+                    [2, 0, 0], [2, 0, 0], [2, 0, 0], [2, 1, 0],
+                    [4, 0, 0], [4, 0, 0], [4, 0, 0], [8, 0, 0], [8, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [8, 0, 0], [8, 0, 0],
+                    [4, 0, 0], [4, 0, 0], [4, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [16, 0, 1], [16, 0, 0], [8, 0, 1], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0],
+                    [1, 0, 0], [1, 0, 1], [1, 0, 0], [1, 0, 1], [1, 0, 0], [1, 0, 1], [1, 0, 0], [2, 0, 0], [4, 0, 0], [4, 0, 0],
+                    [4, 0, 1], [4, 0, 0], [4, 0, 1], [4, 0, 0], [4, 0, 1], [4, 0, 0], [4, 0, 1], [4, 0, 0], [4, 0, 1], [4, 0, 0], [4, 0, 1], [4, 0, 0], [4, 0, 1], [4, 0, 0], [4, 0, 1], [4, 0, 0],
+                    [4, 0, 1], [4, 0, 0], [4, 0, 1], [4, 0, 0], [4, 0, 1], [4, 0, 0], [4, 0, 1], [4, 0, 0],
+                    [4, 0, 0], [8, 0, 1], [8, 0, 0], [4, 0, 1], [4, 0, 0], [8, 0, 0], [16, 0, 1], [16, 0, 0], [8, 0, 1], [8, 0, 0], [83, 0, 0], [83, 0, 0], [83, 0, 0], [4, 0, 0],
+                    [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [8, 0, 0], [8, 0, 0],
+                    [4, 0, 1], [4, 0, 0], [4, 0, 0], [8, 0, 0], [8, 0, 0], [4, 0, 1], [4, 0, 0], [4, 0, 0], [4, 0, 0],
+                    [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0],
+                    [2, 0, 0], [2, 0, 0], [2, 0, 0], [4, 0, 0], [4, 0, 0],
+                    [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [8, 0, 0], [8, 0, 0],
+                    [4, 0, 1], [4, 0, 0], [4, 0, 0], [8, 0, 0], [8, 0, 0], [4, 0, 1], [4, 0, 0], [4, 0, 0], [4, 0, 0],
+                    [2, 0, 0], [8, 0, 1], [8, 0, 0], [8, 0, 0], [8, 0, 0], [2, 0, 1], [8, 0, 1], [8, 0, 0], [8, 0, 0], [8, 0, 0],
+                    [2, 0, 1], [4, 0, 1], [8, 0, 0], [8, 0, 0], [2, 0, 1], [4, 0, 1], [4, 0, 0],
+                    [4, 0, 0], [4, 0, 0], [4, 0, 0], [8, 0, 0], [8, 0, 0], [4, 0, 1], [4, 0, 0], [4, 0, 0], [4, 0, 0],
+                    [2, 0, 0], [8, 0, 1], [8, 0, 0], [8, 0, 0], [8, 0, 0], [2, 0, 1], [4, 0, 1], [4, 0, 0],
+                    [4, 0, 0], [4, 0, 0], [4, 0, 0], [8, 0, 0], [8, 0, 0], [4, 0, 1], [4, 0, 0], [4, 0, 0], [4, 0, 0],
+                    [1, 1, 0], [2, 1, 0], [4, 0, 1], [4, 0, 0],
+                    [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0],
+                    [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0],
+                    [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0],
+                    [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0],
+                    [4, 0, 1], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [8, 0, 0], [8, 0, 0],
+                    [4, 0, 1], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0]
+
+            ],
+    notesData: [],
+    barData: []
+};
+const music04 = {
+    title: 'Typoghoti',
+    level: ['hard', '★★★★★'],
     oneBarLength: 600,
     bpm: 185,
     musicData: [    [1, 0, 1], [1, 0, 1], [1, 0, 1],
@@ -75,8 +151,6 @@ const music01 = {
                     [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [8, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], 
                     [4, 0, 1], [8, 0, 0], [16, 0, 1], [16, 0, 0], [8, 0, 1], [8, 0, 0], [16, 0, 1], [16, 0, 0], [8, 0, 1], [8, 0, 0], [16, 0, 1], [16, 0, 0], [8, 0, 1], [8, 0, 0], [16, 0, 1], [16, 0, 0], [8, 0, 1], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], 
                     [4, 0, 1], [8, 0, 0], [16, 0, 1], [16, 0, 0], [8, 0, 1], [8, 0, 0], [16, 0, 1], [16, 0, 0], [8, 0, 1], [4, 0, 0]
-                    
-
             ],
     notesData: [],
     barData: []
@@ -158,19 +232,36 @@ const lengthRatio = {
 class SelectMenu {
     constructor(_musics) {
         this.musics = _musics;
+        this.selectingMusicNumber = 0;
         this.selectingMusic = this.musics[0];
+    }
+    setSelectingMusic() {
+        this.selectingMusic = this.musics[this.selectingMusicNumber];
+        this.switchFlg();
+    }
+    switchFlg() {
+        for(let i = 0; i < this.musics.length; i++) {
+            if(this.musics[i] === this.selectingMusic) {
+                this.musics[i].isSelected = true;
+            } else {
+                this.musics[i].isSelected = false;
+            }
+        }
     }
 }
 
 class SelectMenuMusic {
-    constructor(_vec, _name, _levels) {
+    constructor(_vec, _music) {
         this.isSelected = false;
         this.vec = _vec;
-        this.name = _name;
-        this.levels = _levels;
+        this.music = _music;
+        this.mp3 = '';
+        this.name = _music.title;
+        this.levelLabel = _music.level[0];
+        this.levelStar = _music.level[1];
     }
     create() {
-        rectMode(CENTER);
+        rectMode(CORNER);
         strokeWeight(5);
         noFill();
         if(this.isSelected) {
@@ -178,19 +269,22 @@ class SelectMenuMusic {
         } else {
             stroke(255);
         }
-        rect(this.vec.x, this.vec.y, 100, 300);
+        rect(this.vec.x, this.vec.y, 160, 203);
         textFont('Helvetica');
-        fill(255);
-        textSize(20);
+        fill(0);
+        textSize(25);
         strokeWeight(1);
-        text(this.name, this.vec.x + 25, this.vec.y - 125 );
-        text(this.levels[0], this.vec.x - 25, this.vec.y + 20);
-
+        text(this.name, this.vec.x + 25, this.vec.y + 35);
+        text(this.levelLabel, this.vec.x + 25, this.vec.y + 85);
+        text(this.levelStar, this.vec.x + 15, this.vec.y + 170);
     }
 }
 
-const typoghtoti = new SelectMenuMusic(new Vec2(400, 225), 'T\ny\np\no\ng\nh\no\nt\ni', ['☆\n☆\n★\n★\n★', '★\n★\n★\n★\n★']);
-const selectMenu = new SelectMenu([typoghtoti]);
+const untitled_easy = new SelectMenuMusic(new Vec2(17, 142), music01);
+const untitled_hard = new SelectMenuMusic(new Vec2(211, 142), music02);
+const typoghtoti_easy = new SelectMenuMusic(new Vec2(403, 142), music03);
+const typoghoti_hard = new SelectMenuMusic(new Vec2(599, 142), music04);
+const selectMenu = new SelectMenu([untitled_easy, untitled_hard, typoghtoti_easy, typoghoti_hard]);
 
 class Score {
     constructor(_vec) {
@@ -210,13 +304,14 @@ class Score {
         stroke('#ffffff');
         strokeWeight(8);
         fill(0);
-        rect(this.vec.x + 60, this.vec.y + 30, width / 6, this.vec.y);
+        rect(this.vec.x + 0, this.vec.y + 0, width / 6, this.vec.y);
     }
     showScore() {
         textAlign(CENTER);
         textSize(10);
         noStroke();
         fill(255);
+        textFont("'Press Start 2P', cursive");
         text(`COMBO: ${this.combo}`, this.vec.x + width / 12, 1.5 * this.vec.y);
         text(`SCORE: ${this.score}`, this.vec.x + width / 12, 0.7 * this.vec.y);
 
@@ -455,9 +550,15 @@ function scanJudge() {
 
 function preload() {
     soundFormats('mp3', 'wav');
-    sound = loadSound('assets/Typoghoti.mp3');
+    sound[0] = loadSound('assets/Seisyo-1.mp3');
+    sound[1] = loadSound('assets/Typoghoti.mp3');
+    untitled_easy.mp3 = sound[0];
+    untitled_hard.mp3 = sound[0];
+    typoghtoti_easy.mp3 = sound[1];
+    typoghoti_hard.mp3 = sound[1];
     pico = loadSound('assets/pico.mp3');
     title = loadImage('assets/title.png');
+    select = loadImage('assets/select.png');
 }
 
 function setup() {
@@ -467,7 +568,6 @@ function setup() {
     score = new Score(new Vec2(0, notesLine.height));
     judgmentFrame = new JudgmentFrame(notesLine.judgmentFramePosition);
     textFont("'Press Start 2P', cursive");
-    loadMusicData(playMusic.musicData, notesLine.judgmentFramePosition);
     frameRate(60);
     
 }
@@ -496,13 +596,17 @@ function showTitle() {
 
 function selectMusic() {
     background(0);
-    selectMenu.musics[0].create();
+    image(select, 0, 0);
+    for(let i = 0; i < selectMenu.musics.length; i++) {
+        selectMenu.musics[i].create();
+    }
     if(!selectFlg) {
         setTimeout(() => {
             selectMenu.selectingMusic.isSelected = true;
             selectFlg = true;
         }, 50);
     }
+    console.log(selectMenu.selectingMusicNumber);
 }
 
 function play() {
@@ -557,13 +661,27 @@ function showTitleKeyPressed() {
 
 function selectMusicKeyPressed() {
     pico.play();
-    playFlg = 2;
-    noLoop();
-    setTimeout(() => {
-        loop();
-        sound.play();
-        textFont("'Press Start 2P', cursive");
-    }, 1000);
+    if(keyCode === 70) {
+        if(selectMenu.selectingMusicNumber > 0) {
+            selectMenu.selectingMusicNumber--;
+            selectMenu.setSelectingMusic();
+        }
+    } else if(keyCode === 74) {
+        if(selectMenu.selectingMusicNumber < 3) {
+            selectMenu.selectingMusicNumber++;
+            selectMenu.setSelectingMusic();
+        }
+    } else if(keyCode === 32) {
+        playMusic = selectMenu.selectingMusic.music;
+        loadMusicData(playMusic.musicData, notesLine.judgmentFramePosition);
+        playFlg = 2;
+        noLoop();
+        setTimeout(() => {
+            loop();
+            selectMenu.selectingMusic.mp3.play();
+            textFont("'Press Start 2P', cursive");
+        }, 1000);
+    }
 }
 
 function playKeyPressed() {
@@ -583,4 +701,10 @@ function playKeyPressed() {
 
 function keyReleased() {
     pressFlg = false;
+}
+
+function mousePressed() {
+    console.log(`x=${mouseX}`);
+    console.log(`y=${mouseY}`);
+
 }
