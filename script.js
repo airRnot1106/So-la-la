@@ -15,7 +15,7 @@ const music01 = {
     level: ['easy', '☆☆☆☆★'],
     oneBarLength: 400,
     bpm: 203,
-    musicData: [
+    musicData: [    [1, 0, 0], [1, 0, 0]
 
             ],
     notesData: [],
@@ -26,7 +26,7 @@ const music02 = {
     level: ['hard', '☆★★★★'],
     oneBarLength: 400,
     bpm: 203,
-    musicData: [
+    musicData: [    [1, 0, 0], [1, 0, 0]
 
             ],
     notesData: [],
@@ -592,6 +592,7 @@ function draw() {
             play();
             break;
         case 3:
+            showResult();
             break;
     }
     
@@ -640,10 +641,19 @@ function play() {
             notes.die();
         }
     }
+    if(playMusic.notesData[playMusic.notesData.length - 1].flg && !selectMenu.selectingMusic.mp3.isPlaying()) {
+        setTimeout(() => {
+            playFlg = 3;
+        }, 3000);
+    }
     score.create();
     score.showScore();
     score.showQuality();
     score.showTitle();
+}
+
+function showResult() {
+    background(0);
 }
 
 function keyPressed() {
