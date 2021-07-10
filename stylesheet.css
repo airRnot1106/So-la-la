@@ -3,6 +3,7 @@
     top: 450px;
     font-family: 'Press Start 2P', cursive;
 }
+
 .select {
     float: left;
 }
@@ -11,4 +12,8 @@
     float: left;
     padding-left: 10px;
     border-left: 5px solid;
+}
+
+h3#secret {
+    display: none;
 }

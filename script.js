@@ -10,6 +10,7 @@ let result;
 let playFlg = 0;
 let selectFlg = false;
 let resultFlg = false;
+let cmdArray = [];
 
 
 const music01 = {
@@ -161,6 +162,18 @@ const music04 = {
     notesData: [],
     barData: []
 };
+const music05 = {
+    title: 'Atala',
+    level: ['???', '☆☆☆☆★'],
+    oneBarLength: 800,
+    bpm: 86,
+    musicData: [    [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0]
+
+            ],
+    maxCombo: 2,
+    notesData: [],
+    barData: []
+};
 let playMusic = music01;
 
 /*
@@ -293,6 +306,9 @@ const typoghtoti_easy = new SelectMenuMusic(new Vec2(403, 142), music03);
 const typoghoti_hard = new SelectMenuMusic(new Vec2(599, 142), music04);
 const selectMenu = new SelectMenu([untitled_easy, untitled_hard, typoghtoti_easy, typoghoti_hard]);
 
+const atala = new SelectMenuMusic(new Vec2(400, 225), music05);
+const selectMenu_a = new SelectMenu([atala]);
+
 class Result {
     constructor(_music, _score) {
         this.title = _music.title;
@@ -351,7 +367,12 @@ class Result {
                 this.setTimeFlg = false;
             }, 2000);
         }
-        
+        if(this.title === 'Typoghoti' && this.level === 'hard') {
+            if(this.score.maxCombo === this.notesQuantity) {
+                let secret = document.getElementById("secret");
+                secret.style.display = "block";
+            }
+        }
     }
 }
 
@@ -374,6 +395,7 @@ class Score {
         stroke('#ffffff');
         strokeWeight(8);
         fill(0);
+        rectMode(CORNER);
         rect(this.vec.x + 0, this.vec.y + 0, width / 6, this.vec.y);
     }
     showScore() {
@@ -578,7 +600,6 @@ class LongNotes extends Notes {
         if(judgeVec.x > new Vec2(playMusic.oneBarLength * (lengthRatio[this.value.toString(10)] / lengthRatio['1']), 0).x - 30) {
             score.mashingTime = 0;
             this.flg = true;
-            console.log("a");
         }
     }
 }
@@ -636,12 +657,14 @@ function scanJudge() {
 
 function preload() {
     soundFormats('mp3', 'wav');
-    sound[0] = loadSound('assets/Seisyo-1.mp3');
+    sound[0] = loadSound('assets/pico.mp3');
     sound[1] = loadSound('assets/Typoghoti.mp3');
+    sound[2] = loadSound('assets/Atala.mp3');
     untitled_easy.mp3 = sound[0];
     untitled_hard.mp3 = sound[0];
     typoghtoti_easy.mp3 = sound[1];
     typoghoti_hard.mp3 = sound[1];
+    atala.mp3 = sound[2];
     pico = loadSound('assets/pico.mp3');
     title = loadImage('assets/title.png');
     select = loadImage('assets/select.png');
@@ -669,6 +692,9 @@ function draw() {
         case 3:
             showResult();
             break;
+        case -1:
+            showAtala();
+            break
     }
 }
 
@@ -715,12 +741,12 @@ function play() {
             notes.die();
         }
     }
-    if(playMusic.notesData[playMusic.notesData.length - 1].flg && !selectMenu.selectingMusic.mp3.isPlaying() && !resultFlg) {
+    if(playMusic.notesData[playMusic.notesData.length - 1].flg && (!selectMenu.selectingMusic.mp3.isPlaying() && !selectMenu_a.selectingMusic.mp3.isPlaying()) && !resultFlg) {
         resultFlg = true;
         result = new Result(playMusic, score);
         setTimeout(() => {
             playFlg = 3;
-        }, 3000);
+        }, 2000);
     }
     score.create();
     score.showScore();
@@ -730,12 +756,39 @@ function play() {
 }
 
 function showResult() {
-    console.log(playFlg);
     if(playFlg === 1) {
         return 0;
     }
     background(0);
     result.create();
+}
+
+let atalaFlg = false;
+function showAtala() {
+    background(0);
+    if(atalaFlg) {
+        stroke('yellow');
+    } else {
+        stroke('white');
+    }
+    strokeWeight(5);
+    rectMode(CENTER);
+    noFill();
+    rect(400, 225, 150, 350);
+    textAlign(LEFT);
+    textFont("'Press Start 2P', cursive");
+    textSize(28);
+    noStroke();
+    fill('white');
+    text('A\nt\na\nl\na', 430, 95);
+    textSize(20);
+    text('?\n?\n?', 355, 300);
+    if(!atalaFlg) {
+        setTimeout(() => {
+            atalaFlg = true;
+        }, 150);
+    }
+
 }
 
 function keyPressed() {
@@ -752,6 +805,9 @@ function keyPressed() {
         case 3:
             showResultKeyPressed();
             break;
+        case -1:
+            showAtalaKeyPressed();
+            break;
     }
 }
 
@@ -762,6 +818,7 @@ function showTitleKeyPressed() {
 
 function selectMusicKeyPressed() {
     pico.play();
+    queueCmd(keyCode);
     if(keyCode === 70) {
         if(selectMenu.selectingMusicNumber > 0) {
             selectMenu.selectingMusicNumber--;
@@ -789,6 +846,8 @@ function selectMusicKeyPressed() {
             selectMenu.selectingMusic.mp3.play();
             textFont("'Press Start 2P', cursive");
         }, 1000);
+    } else if(isAtalaCmd([16, 65, 84, 76])) {
+        playFlg = -1;
     }
 }
 
@@ -809,12 +868,75 @@ function showResultKeyPressed() {
     playFlg = 1;
 }
 
+function showAtalaKeyPressed() {
+    pico.play();
+    if(keyCode === 32) {
+        playMusic = selectMenu_a.selectingMusic.music;
+        loadMusicData(playMusic.musicData, notesLine.judgmentFramePosition);
+        score = new Score(new Vec2(0, notesLine.height));
+        console.log('Loading of the ??? is complete.');
+        console.log('---Play-Music-Data-----------------------');
+        console.log(`Title: ${playMusic.title}`);
+        console.log(`Level: ${playMusic.level[0]}`);
+        console.log('-----------------------------------------');
+        console.log('Can you hear me?');
+        playFlg = 2;
+        noLoop();
+        setTimeout(() => {
+            loop();
+            selectMenu_a.selectingMusic.mp3.play();
+            textFont("'Press Start 2P', cursive");
+            sendMessage('Ah...', 10);
+            sendMessage('Are you surprised?', 20);
+            sendMessage('Well, you found me, didn\'t you?', 30);
+            sendMessage('Um...', 40);
+            sendMessage('Do you know the phrase in this music anywhere?', 50);
+            sendMessage('I\'d be happy if you remembered it.', 60);
+            sendMessage('Thank you for playing along so far.', 70);
+            sendMessage('By the way, if you\'re looking here, you can see the source code for this game, right?', 80);
+            sendMessage('It\'s a little embarrassing, so I hope you won\'t look at it too much.', 90);
+            sendMessage('So, enjoy your playing!', 100);
+            sendMessage('So-la-la', 115);
+            sendMessage('Presented by Oto-game Group.', 120);
+            sendMessage('-Fin-', 155);
+        }, 1000);
+    }
+}
+
 function keyReleased() {
     pressFlg = false;
 }
+/*
+16
+65
+84
+76
+*/
+function queueCmd(cmd) {
+    cmdArray.push(cmd);
+    if(cmdArray.length > 4) {
+        cmdArray.shift();
+    }
+    //console.log(cmdArray);
+}
 
-function mousePressed() {
+function isAtalaCmd(array) {
+    if (!Array.isArray(cmdArray))    return false;
+    if (!Array.isArray(array))    return false;
+    if (cmdArray.length != array.length) return false;
+    for (var i = 0, n = cmdArray.length; i < n; ++i) {
+        if (cmdArray[i] !== array[i]) return false;
+    }
+    return true;
+}
+
+function sendMessage(message, time) {
+    setTimeout(() => {
+        console.log(message);
+    }, time * 1000);
+}
+
+/*function mousePressed() {
     console.log(`x=${mouseX}`);
     console.log(`y=${mouseY}`);
-
-}
+}*/
