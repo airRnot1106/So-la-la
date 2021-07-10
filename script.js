@@ -632,7 +632,7 @@ function scanJudge() {
 
 function preload() {
     soundFormats('mp3', 'wav');
-    sound[0] = loadSound('assets/pico.mp3'); //MUST
+    sound[0] = loadSound('assets/Seisyo-1.mp3');
     sound[1] = loadSound('assets/Typoghoti.mp3');
     untitled_easy.mp3 = sound[0];
     untitled_hard.mp3 = sound[0];
