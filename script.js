@@ -20,6 +20,7 @@ const music01 = {
     musicData: [    [1, 0, 0], [1, 0, 0]
 
             ],
+    maxCombo: 2,
     notesData: [],
     barData: []
 };
@@ -31,6 +32,7 @@ const music02 = {
     musicData: [    [1, 0, 0], [1, 0, 0]
 
             ],
+    maxCombo: 2,
     notesData: [],
     barData: []
 };
@@ -83,6 +85,7 @@ const music03 = {
                     [4, 0, 1], [4, 0, 0], [4, 0, 0], [4, 0, 0], [4, 0, 0]
 
             ],
+    maxCombo: 276,
     notesData: [],
     barData: []
 };
@@ -154,6 +157,7 @@ const music04 = {
                     [4, 0, 1], [8, 0, 0], [16, 0, 1], [16, 0, 0], [8, 0, 1], [8, 0, 0], [16, 0, 1], [16, 0, 0], [8, 0, 1], [8, 0, 0], [16, 0, 1], [16, 0, 0], [8, 0, 1], [8, 0, 0], [16, 0, 1], [16, 0, 0], [8, 0, 1], [16, 0, 0], [16, 0, 0], [16, 0, 0], [16, 0, 0], 
                     [4, 0, 1], [8, 0, 0], [16, 0, 1], [16, 0, 0], [8, 0, 1], [8, 0, 0], [16, 0, 1], [16, 0, 0], [8, 0, 1], [4, 0, 0]
             ],
+    maxCombo: 681,
     notesData: [],
     barData: []
 };
@@ -293,7 +297,7 @@ class Result {
     constructor(_music, _score) {
         this.title = _music.title;
         this.level = _music.level[0];
-        this.notesQuantity = _music.musicData.length;
+        this.notesQuantity = _music.maxCombo;
         this.score = _score;
         this.setTimeFlg = false;
         this.showResultFlg = false;
