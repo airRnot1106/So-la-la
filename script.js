@@ -6,8 +6,10 @@ let sound = [];
 let pico;
 let title;
 let select;
+let result;
 let playFlg = 0;
 let selectFlg = false;
+let resultFlg = false;
 
 
 const music01 = {
@@ -273,6 +275,7 @@ class SelectMenuMusic {
         textFont('Helvetica');
         fill(0);
         textSize(25);
+        textAlign(LEFT);
         strokeWeight(1);
         text(this.name, this.vec.x + 25, this.vec.y + 35);
         text(this.levelLabel, this.vec.x + 25, this.vec.y + 85);
@@ -286,6 +289,68 @@ const typoghtoti_easy = new SelectMenuMusic(new Vec2(403, 142), music03);
 const typoghoti_hard = new SelectMenuMusic(new Vec2(599, 142), music04);
 const selectMenu = new SelectMenu([untitled_easy, untitled_hard, typoghtoti_easy, typoghoti_hard]);
 
+class Result {
+    constructor(_music, _score) {
+        this.title = _music.title;
+        this.level = _music.level[0];
+        this.notesQuantity = _music.musicData.length;
+        this.score = _score;
+        this.setTimeFlg = false;
+        this.showResultFlg = false;
+    }
+    create() {
+        background(0);
+        strokeWeight(1);
+        stroke(1);
+        textFont("'Press Start 2P', cursive");
+        textAlign(LEFT);
+        textSize(25);
+        fill('white');
+        text('Result', 10, 30);
+        textSize(18);
+        text(`Music Title\t: ${this.title}`, 20, 80);
+        text(`Level\t\t\t\t: ${this.level}`, 20, 100);
+        fill('yellow');
+        textSize(23);
+        text(`Score\t: ${this.score.score}`, 20, 160);
+        textSize(14);
+        fill('white');
+        text(`Max Combo\t: ${this.score.maxCombo}`, 560, 200);
+        text(`Perfect\t: ${this.score.perfectTime}`, 560, 220);
+        text(`Great\t: ${this.score.greatTime}`, 560, 240);
+        text(`Nice\t: ${this.score.niceTime}`, 560, 260);
+        text(`Miss\t: ${this.score.missTime}`, 560, 280);
+        if(this.score.perfectTime === this.notesQuantity) {
+            textSize(24);
+            fill('#ff6666');
+            text('All Perfect Combo!!!!', 20, 240);
+            text('Congratulations!!', 20, 270);
+        } else if(this.score.maxCombo === this.notesQuantity) {
+            textSize(22);
+            fill('white');
+            text('Full Combo!!', 20, 240);
+        }
+        if(!this.showResultFlg && !this.setTimeFlg) {
+            this.setTimeFlg = true;
+            setTimeout(() => {
+                this.showResultFlg = true;
+                this.setTimeFlg = false;
+            }, 2000);
+        }
+        if(this.showResultFlg && !this.setTimeFlg) {
+            textAlign(CENTER);
+            textSize(12);
+            fill('white');
+            text('Press any key', 400, 400);
+            setTimeout(() => {
+                this.showResultFlg = false;
+                this.setTimeFlg = false;
+            }, 2000);
+        }
+        
+    }
+}
+
 class Score {
     constructor(_vec) {
         this.vec = _vec;
@@ -295,6 +360,7 @@ class Score {
         this.perfectTime = 0;
         this.greatTime = 0;
         this.niceTime = 0;
+        this.missTime = 0;
         this.mashingTime = 0;
         this.mashingFlg = 0;
         this.strQuality = '';
@@ -370,6 +436,7 @@ class Score {
     }
     fail() {
         console.log('miss');
+        this.missTime++;
         this.strQuality = 'miss';
         this.qualityFlg = 30;
         this.combo = 0;
@@ -431,7 +498,7 @@ class Notes {
         this.quality;
     }
     scroll() {
-        this.vec = this.vec.add(new Vec2(getMoveFrame(playMusic.bpm, playMusic.oneBarLength) * -1, 0));
+        this.vec = this.vec.add(new Vec2(getMoveFrame(playMusic.bpm, playMusic.oneBarLength, frameRate()) * -1, 0));
     }
     create() {}
     judge() {}
@@ -523,7 +590,7 @@ class Bar extends Notes {
 }
 
 function loadMusicData(musicData, judgmentFrameVec) {
-    const defaultVec = new Vec2(judgmentFrameVec.x + playMusic.oneBarLength + 10, judgmentFrameVec.y);
+    const defaultVec = new Vec2(judgmentFrameVec.x + playMusic.oneBarLength + 40, judgmentFrameVec.y);
     let lastVec = defaultVec;
     for(let value of musicData) {
         if(value[2] === 0) {
@@ -541,9 +608,15 @@ function loadMusicData(musicData, judgmentFrameVec) {
     }
 }
 
-function getMoveFrame(tempo, barLength) {
+function getMoveFrame(tempo, barLength, nowFrameRate) {
+    let frameRate = nowFrameRate;
+    if(frameRate < 34) {
+        frameRate = 60;
+    }
     let oneMeasureFrame = (60 / tempo) * 4 * 60;
     let movingPixcel = barLength / oneMeasureFrame;
+
+    movingPixcel *= 60 / frameRate;
     return movingPixcel;
 }
 
@@ -559,7 +632,7 @@ function scanJudge() {
 
 function preload() {
     soundFormats('mp3', 'wav');
-    sound[0] = loadSound('assets/Seisyo-1.mp3');
+    sound[0] = loadSound('assets/pico.mp3'); //MUST
     sound[1] = loadSound('assets/Typoghoti.mp3');
     untitled_easy.mp3 = sound[0];
     untitled_hard.mp3 = sound[0];
@@ -574,10 +647,8 @@ function setup() {
     createCanvas(800, 450);
     background(0);
     notesLine = new NotesLine(60, '#ffffff');
-    score = new Score(new Vec2(0, notesLine.height));
     judgmentFrame = new JudgmentFrame(notesLine.judgmentFramePosition);
     frameRate(60);
-    
 }
 
 function draw() {
@@ -595,7 +666,6 @@ function draw() {
             showResult();
             break;
     }
-    
 }
 
 function showTitle() {
@@ -641,7 +711,9 @@ function play() {
             notes.die();
         }
     }
-    if(playMusic.notesData[playMusic.notesData.length - 1].flg && !selectMenu.selectingMusic.mp3.isPlaying()) {
+    if(playMusic.notesData[playMusic.notesData.length - 1].flg && !selectMenu.selectingMusic.mp3.isPlaying() && !resultFlg) {
+        resultFlg = true;
+        result = new Result(playMusic, score);
         setTimeout(() => {
             playFlg = 3;
         }, 3000);
@@ -650,10 +722,16 @@ function play() {
     score.showScore();
     score.showQuality();
     score.showTitle();
+    //console.log(frameRate());
 }
 
 function showResult() {
+    console.log(playFlg);
+    if(playFlg === 1) {
+        return 0;
+    }
     background(0);
+    result.create();
 }
 
 function keyPressed() {
@@ -668,6 +746,7 @@ function keyPressed() {
             playKeyPressed();
             break;
         case 3:
+            showResultKeyPressed();
             break;
     }
 }
@@ -692,13 +771,14 @@ function selectMusicKeyPressed() {
     } else if(keyCode === 32) {
         playMusic = selectMenu.selectingMusic.music;
         loadMusicData(playMusic.musicData, notesLine.judgmentFramePosition);
+        score = new Score(new Vec2(0, notesLine.height));
         console.log('Loading of the music is complete.');
         console.log('---Play-Music-Data-----------------------');
         console.log(`Title: ${playMusic.title}`);
         console.log(`Level: ${playMusic.level[0]}`);
         console.log('-----------------------------------------');
+        console.log('Enjoy your playing!');
         playFlg = 2;
-        
         noLoop();
         setTimeout(() => {
             loop();
@@ -717,6 +797,12 @@ function playKeyPressed() {
         scanJudge();
     }
     pressFlg = true;
+}
+
+function showResultKeyPressed() {
+    pico.play();
+    resultFlg = false;
+    playFlg = 1;
 }
 
 function keyReleased() {
