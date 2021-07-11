@@ -432,7 +432,7 @@ class Result {
                 this.setTimeFlg = false;
             }, 2000);
         }
-        if(this.title === 'Untitled' && this.level === 'hard') {
+        if(this.title === 'Typoghoti' && this.level === 'hard') {
             if(this.score.maxCombo === this.notesQuantity) {
                 let secret = document.getElementById("secret");
                 secret.style.display = "block";
