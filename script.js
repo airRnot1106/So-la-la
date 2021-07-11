@@ -684,7 +684,7 @@ function scanJudge() {
 
 function preload() {
     soundFormats('mp3', 'wav');
-    sound[0] = loadSound('assets/pico.mp3');
+    sound[0] = loadSound('assets/Seisyo-1.mp3');
     sound[1] = loadSound('assets/Typoghoti.mp3');
     sound[2] = loadSound('assets/Atala.mp3');
     untitled_easy.mp3 = sound[0];
@@ -923,9 +923,9 @@ function showAtalaKeyPressed() {
             sendMessage('By the way, if you\'re looking here, you can see the source code for this game, right?', 80);
             sendMessage('It\'s a little embarrassing, so I hope you won\'t look at it too much.', 90);
             sendMessage('So, enjoy your playing!', 100);
-            sendMessage('So-la-la', 115);
-            sendMessage('Presented by Oto-game Group.', 120);
-            sendMessage('-Fin-', 155);
+            sendMessage('So-la-la', 118);
+            sendMessage('Presented by Oto-game Group.', 123);
+            sendMessage('-Fin-', 158);
         }, 1000);
     }
 }
