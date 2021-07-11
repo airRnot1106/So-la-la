@@ -16,4 +16,5 @@
 
 h3#secret {
     display: none;
+    color: red;
 }

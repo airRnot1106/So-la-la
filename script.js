@@ -432,7 +432,7 @@ class Result {
                 this.setTimeFlg = false;
             }, 2000);
         }
-        if(this.title === 'Typoghoti' && this.level === 'hard') {
+        if(this.title === 'Untitled' && this.level === 'hard') {
             if(this.score.maxCombo === this.notesQuantity) {
                 let secret = document.getElementById("secret");
                 secret.style.display = "block";
@@ -971,9 +971,9 @@ function showAtalaKeyPressed() {
             sendMessage('Do you know the phrase in this music anywhere?', 50);
             sendMessage('I\'d be happy if you remembered it.', 60);
             sendMessage('Thank you for playing along so far.', 70);
-            sendMessage('By the way, if you\'re looking here, you can see the source code for this game, right?', 80);
-            sendMessage('It\'s a little embarrassing, so I hope you won\'t look at it too much.', 90);
-            sendMessage('So, enjoy your playing!', 100);
+            //sendMessage('By the way, if you\'re looking here, you can see the source code for this game, right?', 80);
+            //sendMessage('It\'s a little embarrassing, so I hope you won\'t look at it too much.', 90);
+            sendMessage('So, enjoy your playing!', 90);
             sendMessage('So-la-la', 118);
             sendMessage('Presented by Oto-game Group.', 123);
             sendMessage('-Fin-', 158);
