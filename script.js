@@ -347,6 +347,10 @@ class Setting {
             this.offset--;
         } else if(key === 74) {
             this.offset++;
+        } else if(key === 38) {
+            this.offset += 10;
+        } else if(key === 40) {
+            this.offset -= 10;
         }
     }
     getOffset() {
