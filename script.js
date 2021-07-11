@@ -11,6 +11,8 @@ let playFlg = 0;
 let selectFlg = false;
 let resultFlg = false;
 let cmdArray = [];
+let setting;
+let settingFlg = false;
 
 
 const music01 = {
@@ -336,6 +338,38 @@ const selectMenu = new SelectMenu([untitled_easy, untitled_hard, typoghtoti_easy
 const atala = new SelectMenuMusic(new Vec2(400, 225), music05);
 const selectMenu_a = new SelectMenu([atala]);
 
+class Setting {
+    constructor() {
+        this.offset = 0;
+    }
+    setOffset(key) {
+        if(key === 70) {
+            this.offset--;
+        } else if(key === 74) {
+            this.offset++;
+        }
+    }
+    getOffset() {
+        return this.offset;
+    }
+    createOffset() {
+        rectMode(CENTER);
+        stroke(10);
+        strokeWeight(2);
+        fill('#bebec8');
+        rect(400, 225, 280, 200);
+        stroke(1);
+        strokeWeight(1);
+        fill('black');
+        textFont('Helvetica');
+        textAlign(CENTER);
+        textSize(40);
+        text('Config', 400, 180);
+        textSize(20);
+        text(`Offset: ${this.getOffset()}`, 400, 270);
+    }
+}
+
 class Result {
     constructor(_music, _score) {
         this.title = _music.title;
@@ -642,7 +676,7 @@ class Bar extends Notes {
 }
 
 function loadMusicData(musicData, judgmentFrameVec) {
-    const defaultVec = new Vec2(judgmentFrameVec.x + playMusic.oneBarLength + 40, judgmentFrameVec.y);
+    const defaultVec = new Vec2(judgmentFrameVec.x + playMusic.oneBarLength + 40 + setting.getOffset(), judgmentFrameVec.y);
     let lastVec = defaultVec;
     for(let value of musicData) {
         if(value[2] === 0) {
@@ -702,6 +736,7 @@ function setup() {
     background(0);
     notesLine = new NotesLine(60, '#ffffff');
     judgmentFrame = new JudgmentFrame(notesLine.judgmentFramePosition);
+    setting = new Setting();
     frameRate(60);
 }
 
@@ -741,6 +776,9 @@ function selectMusic() {
             selectMenu.selectingMusic.isSelected = true;
             selectFlg = true;
         }, 50);
+    }
+    if(settingFlg) {
+        setting.createOffset();
     }
 }
 
@@ -846,6 +884,13 @@ function showTitleKeyPressed() {
 function selectMusicKeyPressed() {
     pico.play();
     queueCmd(keyCode);
+    if(settingFlg) {
+        setting.setOffset(keyCode);
+        if(keyCode === 32) {
+            settingFlg = false;
+        }
+        return 0;
+    }
     if(keyCode === 70) {
         if(selectMenu.selectingMusicNumber > 0) {
             selectMenu.selectingMusicNumber--;
@@ -875,6 +920,8 @@ function selectMusicKeyPressed() {
         }, 1000);
     } else if(isAtalaCmd([16, 65, 84, 76])) {
         playFlg = -1;
+    } else if(keyCode === 67) {
+        settingFlg = true;
     }
 }
 
@@ -963,7 +1010,7 @@ function sendMessage(message, time) {
     }, time * 1000);
 }
 
-/*function mousePressed() {
+function mousePressed() {
     console.log(`x=${mouseX}`);
     console.log(`y=${mouseY}`);
-}*/
+}
