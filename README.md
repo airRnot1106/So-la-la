@@ -15,6 +15,7 @@
 ## How to play?
 
 https://airrnot1106.github.io/So-la-la/
+
 ↑このリンクから遊ぶことができます(PC限定)。
 
 ###  Instractions
@@ -66,11 +67,6 @@ Miss: 0点！！
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/airRnot1106/breakout/blob/master/LICENSE) file for details.
-
-
-
-
-
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/airRnot1106/So-la-la/blob/master/LICENSE) file for details.
 
 
