@@ -117,7 +117,7 @@ const music01 = {
     barData: []
 };
 const music02 = {
-    title: 'Untitled',
+    title: 'Suffering\nof_Halo',
     level: ['hard', '☆★★★★'],
     oneBarLength: 400,
     bpm: 203,
