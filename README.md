@@ -18,7 +18,7 @@ https://airrnot1106.github.io/So-la-la/
 
 ↑このリンクから遊ぶことができます(PC限定)。
 
-###  Instractions
+###  Instructions
 
 #### Select Music Mode
 
