@@ -1,5 +1,9 @@
 # Sola-la
 
+## Updating
+
+同期ズレの軽減やランキング機能を実装したTypeScriptEditionを公開しました！→<https://github.com/airRnot1106/Sola-la-TypeScriptEdition>
+
 ## OverView
 
 •Sola-la ― 洗練された圧倒的なお手軽リズムゲーム！
